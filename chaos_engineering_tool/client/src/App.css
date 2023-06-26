@@ -1,0 +1,32 @@
+.App {
+  text-align: center;
+}
+
+body {
+  background-color: #2C645B;
+}
+
+.form { 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#button {
+  padding: 5px;
+  margin:10px;
+  background-color: #73AB95;
+  border-radius: 10px;
+}
+
+label {
+  display: inline-block;
+  width: 250px;
+  text-align: right;
+  padding: 5px;
+}
+
+input {
+  border-radius: 5px;
+}
