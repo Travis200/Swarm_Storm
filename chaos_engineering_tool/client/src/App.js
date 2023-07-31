@@ -3,7 +3,6 @@ import "./App.css";
 import Axios from "axios";
 
 function App() {
-
   const [IPAddr, setIPAddr] = useState('');
   const [targetNodes, setTargetNodes] = useState([]);
   const [readyStateNodes, setReadyStateNodes] = useState([]);
@@ -11,23 +10,42 @@ function App() {
   const [experimentRuntime, setExperimentRuntime] = useState('');
   const [networkName, setNetworkName] = useState('');
   const [nodesButtonData, setNodesButtonData] = useState([]);
+  const [isNetworkAttack, setIsNetworkAttack] = useState(null);
+  const [networkDelayCommand, setNetworkDelayCommand] = useState('');
 
   const injectChaos = () => {
-    if (IPAddr.length !== 0 && targetNodes.length !== 0 && stressngCommand !== 0 && experimentRuntime.length !== 0 && networkName.length !==0 ) {
+    if (!isNetworkAttack) {
+      if (IPAddr.length !== 0 && targetNodes.length !== 0 && stressngCommand !== 0 && experimentRuntime.length !== 0 && networkName.length !==0) {
         Axios.post('http://localhost:80/api/stress-ng-nodes',
         {
           "ipAddress": IPAddr,
           "targetNodeIDs": targetNodes,
           "stressngCommand" : stressngCommand,
           "experimentTime" : experimentRuntime,
-          "targetNetwork": networkName
+          "targetNetwork": networkName,
         })
         alert("Chaos injected!");
       }
       else{
         alert("Please ensure there are no empty fields.");
       }
-    };
+    }
+
+    else if (isNetworkAttack) {
+        if (IPAddr.length !== 0 && networkDelayCommand !== 0 && networkName.length !==0) {
+          Axios.post('http://localhost:80/api/network-packet-delay',
+          {
+            "ipAddress": IPAddr,
+            "targetNetwork": networkName,
+            "networkDelayCommand" : networkDelayCommand
+          })
+          alert("Chaos injected!");
+        }
+        else{
+          alert("Please ensure there are no empty fields.");
+        }
+    }
+    }
 
   const targetClick = (nodeID) => {
     if (targetNodes.includes(nodeID)) {
@@ -82,11 +100,52 @@ function App() {
       <input name="ipAddress" onChange={(e) => {
         setIPAddr(e.target.value);
       }}/>
-      <button id="button" onClick={getNodes}>Get Nodes</button> 
+      <button id="button" onClick={getNodes}>Go</button> 
       </div>
-      <h3 form style={{display: nodesButtonData.length>0 ? 'block' : 'none'}}>Choose Target Nodes:</h3>
+
+      <div style={{display: nodesButtonData.length> 0 ? 'block' : 'none'}}>
+      <h3 form>Choose Type Of Attack:</h3>
+          <button id="button" style={{ 
+            backgroundColor: 
+            isNetworkAttack === false || isNetworkAttack === null ? "grey" : "orange" 
+          }}onClick={() => {if (isNetworkAttack === false || isNetworkAttack === null) {setIsNetworkAttack(true)}}}>
+          Network Delay Attack<br/>
+          </button>
+          <button id="button" style={{
+            backgroundColor: 
+            isNetworkAttack === true || isNetworkAttack === null ? "grey" : "orange" 
+          }}onClick={() => {if (isNetworkAttack === true || isNetworkAttack === null) {setIsNetworkAttack(false)}}}>
+          Stress-ng (CPU / Memory) Attack<br/>
+          </button>
+        </div>
+
+        
+        <div style={{display: isNetworkAttack === true ? 'block' : 'none'}}>
+        <form>
+        <label>
+          Docker Network Name: 
+        </label>
+        <input name="networkName" onChange={(e) => {
+            setNetworkName(e.target.value);
+        }}/>
+        <br/>
+        <label>
+          Network Delay Command:
+        </label>
+        <input name="networkDelayCommand" onChange={(e) => {
+            setNetworkDelayCommand(e.target.value);
+        }}/>
+        <br/>
+        <button id="button" onClick={injectChaos}>Inject Chaos</button>
+        </form>
+        </div>
+
+
+
+      <div style={{display: nodesButtonData.length>0 && isNetworkAttack === false ? 'block' : 'none'}}>
+      <h3 form >Choose Target Nodes:</h3>
         {nodesButtonData.map(n => (
-          <button id="button" key={n.id} style={{ 
+          <button id="button" key={n.id} style={{
             backgroundColor: 
             targetNodes.includes(n.id) ? "orange" :
             readyStateNodes.includes(n.id)? "#73AB95" : "grey" 
@@ -94,8 +153,9 @@ function App() {
           <span style={{ fontWeight: 'bold' }}>Node ID: </span>{n.id}<br/>
           </button>
         ))}
+        </div>
         
-        <form style={{display: targetNodes.length>0 ? 'block' : 'none'}}>
+        <form style={{display: targetNodes.length>0 && isNetworkAttack === false ? 'block' : 'none'}}>
         <label>
           Docker Network Name: 
         </label>
@@ -120,7 +180,6 @@ function App() {
         <button id="button" onClick={injectChaos}>Inject Chaos</button>
         </form>
     </div>
-
   );
 } 
 
