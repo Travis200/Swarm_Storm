@@ -11,7 +11,7 @@ function App() {
   const [networkName, setNetworkName] = useState('');
   const [nodesButtonData, setNodesButtonData] = useState([]);
   const [isNetworkAttack, setIsNetworkAttack] = useState(null);
-  const [networkDelayCommand, setNetworkDelayCommand] = useState('');
+  const [networkToDelay, setNetworkToDelay] = useState('');
 
   const injectChaos = () => {
     if (!isNetworkAttack) {
@@ -32,12 +32,12 @@ function App() {
     }
 
     else if (isNetworkAttack) {
-        if (IPAddr.length !== 0 && networkDelayCommand !== 0 && networkName.length !==0) {
+        if (IPAddr.length !== 0 && networkToDelay !== 0 && experimentRuntime.length !==0) {
           Axios.post('http://localhost:80/api/network-packet-delay',
           {
             "ipAddress": IPAddr,
-            "targetNetwork": networkName,
-            "networkDelayCommand" : networkDelayCommand
+            "networkToDelay" : networkToDelay,
+            "experimentRuntime" : experimentRuntime
           })
           alert("Chaos injected!");
         }
@@ -123,17 +123,17 @@ function App() {
         <div style={{display: isNetworkAttack === true ? 'block' : 'none'}}>
         <form>
         <label>
-          Docker Network Name: 
+          Network Interface to Delay:
         </label>
-        <input name="networkName" onChange={(e) => {
-            setNetworkName(e.target.value);
+        <input name="networkDelayCommand" onChange={(e) => {
+            setNetworkToDelay(e.target.value);
         }}/>
         <br/>
         <label>
-          Network Delay Command:
+          Experiment Runtime: 
         </label>
-        <input name="networkDelayCommand" onChange={(e) => {
-            setNetworkDelayCommand(e.target.value);
+        <input name="experimentRuntime" onChange={(e) => {
+            setExperimentRuntime(e.target.value);
         }}/>
         <br/>
         <button id="button" onClick={injectChaos}>Inject Chaos</button>

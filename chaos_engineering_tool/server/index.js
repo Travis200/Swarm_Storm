@@ -140,26 +140,70 @@ app.post("/api/stress-ng-nodes", async (req, res) => {
 app.post("/api/network-packet-delay", async (req, res) => {
     try {
         const ipAddress = req.body.ipAddress;
-        const networkDelayCommand = req.body.networkDelayCommand;
-        const targetNetwork = req.body.targetNetwork;
+        const networkToDelay = req.body.networkToDelay;
+        const experimentTime = req.body.experimentRuntime;
 
         // Create a container to inject network packet delays
-        await Axios.post(`http://${ipAddress}:2375/v1.41/services/create?name=network_delay`,
-            {
-                "Image": "stress-ng",
-                "Command": [
-                    "sh", "-c", networkDelayCommand
-                ],
-                "TTY": true,
+        // await Axios.post(`http://${ipAddress}:2375/v1.41/services/create?name=network_delay`,
+        //     {
+        //         "Image": "stress-ng",
+        //         "Command": [
+        //             "sh", "-c", networkDelayCommand
+        //         ],
+        //         "TTY": true,
 
-                "HostConfig": {
-                    "NetworkMode": targetNetwork,
-                    "CapAdd": [
-                        "NET_ADMIN"
+        //         "HostConfig": {
+        //             "NetworkMode": targetNetwork,
+        //             "CapAdd": [
+        //                 "NET_ADMIN"
+        //             ],
+        //         }
+        //     }
+        // );
+
+        await Axios.post(`http://${ipAddress}:2375/v1.41/services/create`,
+        {
+            "Name": "network-test",
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "stress-ng",
+                    "Command": [
+                        "sh", "-c", `tc qdisc add dev ${networkToDelay} root netem delay 500ms; sleep ${experimentTime}; tc qdisc del dev ${networkToDelay} root netem delay 500ms`
                     ],
+                    "CapabilityAdd" : [
+                        "CAP_NET_ADMIN"
+                    ],
+                    "TTY": true
+                },
+                "Placement": {
+                    "Constraints": [
+                        "node.role!=manager"
+                    ]
                 }
-            }
-        );
+
+            },
+            "Mode": {
+                "ReplicatedJob": {
+                    "MaxConcurrent" : 1,
+                    "TotalCompletions": 1
+                }
+            },
+            "Networks": [
+                {
+                    "Target": "host"
+                }
+            ]
+        }
+    )
+
+    console.log(networkToDelay);
+    console.log(experimentTime);
+
+
+    // await sleep((experimentTime * 1000) - 10000);
+    // Axios.delete(`http://${ipAddress}:2375/v1.41/services/network-test`);
+    // console.log('Service now removed.');
+
     }
     catch (err) {
         console.error(err);
