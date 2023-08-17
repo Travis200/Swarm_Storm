@@ -175,18 +175,21 @@ app.post("/api/network-packet-delay", async (req, res) => {
                     ],
                     "TTY": true
                 },
-                "Placement": {
-                    "Constraints": [
-                        "node.role!=manager"
-                    ]
-                }
+                // "Placement": {
+                //     "Constraints": [
+                //         "node.role!=manager"
+                //     ]
+                // }
 
             },
-            "Mode": {
-                "ReplicatedJob": {
-                    "MaxConcurrent" : 1,
-                    "TotalCompletions": 1
-                }
+            // "Mode": {
+            //     "ReplicatedJob": {
+            //         "MaxConcurrent" : 1,
+            //         "TotalCompletions": 1
+            //     }
+            // },
+            "Mode" : {
+                "Global" : {}
             },
             "Networks": [
                 {
@@ -200,9 +203,9 @@ app.post("/api/network-packet-delay", async (req, res) => {
     console.log(experimentTime);
 
 
-    // await sleep((experimentTime * 1000) - 10000);
-    // Axios.delete(`http://${ipAddress}:2375/v1.41/services/network-test`);
-    // console.log('Service now removed.');
+    await sleep((experimentTime * 1000) - 10000);
+    Axios.delete(`http://${ipAddress}:2375/v1.41/services/network-test`);
+    console.log('Service now removed.');
 
     }
     catch (err) {
