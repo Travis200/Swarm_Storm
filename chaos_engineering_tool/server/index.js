@@ -103,7 +103,7 @@ app.post("/api/stress-ng-nodes", async (req, res) => {
                 "Name": "stress-ng-test",
                 "TaskTemplate": {
                     "ContainerSpec": {
-                        "Image": "stress-ng",
+                        "Image": "travis1220/chaos-engineering:latest",
                         "Command": [
                             "sh", "-c", stressngCommand
                         ],
@@ -166,9 +166,9 @@ app.post("/api/network-packet-delay", async (req, res) => {
             "Name": "network-test",
             "TaskTemplate": {
                 "ContainerSpec": {
-                    "Image": "stress-ng",
+                    "Image": "travis1220/chaos-engineering:latest",
                     "Command": [
-                        "sh", "-c", `tc qdisc add dev ${networkToDelay} root netem delay 500ms; sleep ${experimentTime}; tc qdisc del dev ${networkToDelay} root netem delay 500ms`
+                        "sh", "-c", `tc qdisc add dev ${networkToDelay} root netem delay 500ms; sleep ${experimentTime}; tc qdisc del dev ${networkToDelay} root netem delay 500ms; sleep 60;`
                     ],
                     "CapabilityAdd" : [
                         "CAP_NET_ADMIN"
@@ -202,8 +202,8 @@ app.post("/api/network-packet-delay", async (req, res) => {
     console.log(networkToDelay);
     console.log(experimentTime);
 
-
-    await sleep((experimentTime * 1000) - 10000);
+    // Remove service 5 seconds after network latency has been removed (so task is not redeployed)
+    await sleep((experimentTime * 1000) + 5000);
     Axios.delete(`http://${ipAddress}:2375/v1.41/services/network-test`);
     console.log('Service now removed.');
 
