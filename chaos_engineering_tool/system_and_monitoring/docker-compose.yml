@@ -9,8 +9,6 @@ services:
       placement:
         constraints:
           - node.labels.grafana != True
-    # networks:
-    #   - dockerswarm_default
 
   cadvisormonitoring:
     image: gcr.io/cadvisor/cadvisor:v0.45.0
@@ -24,8 +22,6 @@ services:
       - /dev/disk/:/dev/disk:ro
     deploy:
       mode: global
-    # networks:
-    #   - dockerswarm_default
 
   dockerswarmvisualizer:
     image: dockersamples/visualizer
@@ -37,8 +33,6 @@ services:
       placement:
         constraints:
           - node.role == manager
-    # networks:
-    #   - dockerswarm_default
 
   prometheus:
     image: prom/prometheus:latest
@@ -50,8 +44,6 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
     deploy:
       mode: global
-    # networks:
-    #   - dockerswarm_default
 
   grafana:
     image: grafana/grafana-enterprise
@@ -70,8 +62,6 @@ services:
       placement:
         constraints:
           - node.labels.grafana == True
-    # networks:
-    #   - dockerswarm_default
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -89,12 +79,6 @@ services:
       - 9100:9100
     deploy:
       mode: global
-    # networks:
-    #   - dockerswarm_default
 
 volumes:
   grafana-storage:
-
-# networks:
-#   dockerswarm_default:
-#     external: true

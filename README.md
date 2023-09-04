@@ -18,7 +18,7 @@ Ensure Docker is installed on all of the AWS EC2 instances.
 4. Install Docker on each EC2.
 5. Modify so the docker daemon is exposed.
 6. Restart docker daemon.
-7. Copy across Dockerfile, docker-compose.yml and prometheus.yml from this repo to the master node.
+7. Copy across locustfile.py, docker-compose.yml and prometheus.yml from this repo to the master node.
 8. Pull chaos engineering image using the command ```docker pull travis1220/chaos-engineering```
 9. Add grafana=True label to manager node of docker swarm.
 10. Deploy the stack to the swarm on the manager node using the command ```docker stack deploy -c docker-compose.yml dockerswarm```
