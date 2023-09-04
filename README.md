@@ -37,3 +37,5 @@ Ensure Docker is installed on all of the AWS EC2 instances.
 5. Run ```npm install```
 6. Run ```npm start```
 7. A frontend webserver should now automatically start and load if not open localhost:3005 in your desired web browser.
+
+#### Note: For more detailed instructions, and more information about chaos engineering please view Chaos_Engineering.pdf
