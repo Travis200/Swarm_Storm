@@ -144,23 +144,6 @@ app.post("/api/network-packet-delay", async (req, res) => {
         const experimentTime = req.body.experimentRuntime;
 
         // Create a container to inject network packet delays
-        // await Axios.post(`http://${ipAddress}:2375/v1.41/services/create?name=network_delay`,
-        //     {
-        //         "Image": "stress-ng",
-        //         "Command": [
-        //             "sh", "-c", networkDelayCommand
-        //         ],
-        //         "TTY": true,
-
-        //         "HostConfig": {
-        //             "NetworkMode": targetNetwork,
-        //             "CapAdd": [
-        //                 "NET_ADMIN"
-        //             ],
-        //         }
-        //     }
-        // );
-
         await Axios.post(`http://${ipAddress}:2375/v1.41/services/create`,
         {
             "Name": "network-test",
@@ -175,19 +158,8 @@ app.post("/api/network-packet-delay", async (req, res) => {
                     ],
                     "TTY": true
                 },
-                // "Placement": {
-                //     "Constraints": [
-                //         "node.role!=manager"
-                //     ]
-                // }
 
             },
-            // "Mode": {
-            //     "ReplicatedJob": {
-            //         "MaxConcurrent" : 1,
-            //         "TotalCompletions": 1
-            //     }
-            // },
             "Mode" : {
                 "Global" : {}
             },
